@@ -115,6 +115,7 @@ struct FeedView: View {
                 }
             }
             .padding(.horizontal, 16)
+            .animation(.spring(response: 0.4, dampingFraction: 0.7), value: viewModel.sortedSportTypes)
         }
     }
 
