@@ -14,7 +14,7 @@ final class APIService {
     
     private init() {}
     
-    private var decoder: JSONDecoder {
+    private lazy var decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         let formatter = DateFormatter()
@@ -22,7 +22,7 @@ final class APIService {
         formatter.locale = Locale(identifier: "en_US_POSIX")
         decoder.dateDecodingStrategy = .formatted(formatter)
         return decoder
-    }
+    }()
     
     private lazy var session: URLSession = {
         let config = URLSessionConfiguration.default

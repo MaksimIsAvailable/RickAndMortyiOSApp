@@ -13,6 +13,7 @@ final class ClubViewModel: ObservableObject {
     @Published var club: Club
     @Published var workouts: [Workout] = []
     @Published var isLoading: Bool = false
+    @Published var errorMessage: String? = nil
 
     private let service: WorkoutService
 
@@ -30,6 +31,7 @@ final class ClubViewModel: ObservableObject {
             self.workouts = result
             self.isLoading = false
         } catch {
+            self.errorMessage = "Не удалось загрузить тренировки"
             self.isLoading = false
         }
     }

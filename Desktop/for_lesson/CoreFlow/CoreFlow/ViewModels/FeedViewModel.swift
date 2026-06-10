@@ -84,6 +84,7 @@ final class FeedViewModel: ObservableObject {
         } else {
             selectedSports.append(sport)
         }
+        saveSelectedSports()
     }
     
     func isSelected(_ sport: SportType) -> Bool {
@@ -92,6 +93,7 @@ final class FeedViewModel: ObservableObject {
     
     func clearSports() {
         selectedSports.removeAll()
+        saveSelectedSports()
     }
     
     func selectCity(_ city: String?) {
@@ -102,11 +104,9 @@ final class FeedViewModel: ObservableObject {
         let raw = UserDefaults.standard.stringArray(forKey: "selectedSports") ?? []
         selectedSports = raw.compactMap { SportType(rawValue: $0) }
     }
-    
-    func loadClubs() async {
-        do {
-            clubs = try await service.fetchClubs()
-        } catch {}
+
+    private func saveSelectedSports() {
+        UserDefaults.standard.set(selectedSports.map { $0.rawValue }, forKey: "selectedSports")
     }
     
     func club(for workout: Workout) -> Club? {

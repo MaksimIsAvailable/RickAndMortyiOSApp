@@ -90,6 +90,12 @@ struct ClubView: View {
                 ProgressView()
                     .frame(maxWidth: .infinity)
                     .padding()
+            } else if let error = viewModel.errorMessage {
+                Text(error)
+                    .font(.subheadline)
+                    .foregroundStyle(Color.CF.textSecondary)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
             } else if viewModel.workouts.isEmpty {
                 Text("Нет запланированных тренировок")
                     .font(.subheadline)
@@ -112,7 +118,6 @@ struct ClubView: View {
                 }
                 .background(Color.CF.surface)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
-                //.shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 2)
                 .padding(.horizontal, 16)
             }
         }
