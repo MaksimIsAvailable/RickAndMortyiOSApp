@@ -53,7 +53,7 @@ struct FeedView: View {
                     workoutList
                 }
             }
-            .navigationTitle("Заезды")
+            .navigationTitle("Лента")
             .background(Color.CF.background)
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(Color.CF.background, for: .navigationBar)
