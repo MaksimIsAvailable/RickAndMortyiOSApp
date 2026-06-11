@@ -73,9 +73,28 @@ final class FeedViewModel: ObservableObject {
     }
     
     func reload() async {
-        workouts = []
-        clubs = []
-        await loadWorkouts()
+        guard !isLoading else { return }
+        errorMessage = nil
+        isLoading = true
+        for attempt in 1...5 {
+            do {
+                let c = try await service.fetchClubs()
+                let w = try await service.fetchWorkouts(for: [])
+                self.clubs = c
+                self.workouts = w
+                self.isLoading = false
+                return
+            } catch {
+                if attempt < 3 {
+                    try? await Task.sleep(nanoseconds: 500_000_000)
+                } else {
+                    self.errorMessage = "Не удалось загрузить тренировки"
+                    self.isLoading = false
+                    return
+                }
+            }
+        }
+        isLoading = false
     }
     
     func toggle(sport: SportType) {

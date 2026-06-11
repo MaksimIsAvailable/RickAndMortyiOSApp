@@ -14,6 +14,7 @@ struct ClubsView: View {
     @State private var selectedCity: String? = nil
     @State private var selectedSports: [SportType] = []
     @State private var showFilter = false
+    @State private var animationID: UUID = .init()
     
     private var availableCities: [String] {
         Array(Set(clubs.map { $0.city })).sorted()
@@ -87,16 +88,19 @@ struct ClubsView: View {
     private var clubList: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                ForEach(filteredClubs) { club in
+                ForEach(Array(filteredClubs.enumerated()), id: \.element.id) { index, club in
                     NavigationLink(value: club) {
                         ClubRowView(club: club)
                     }
                     .buttonStyle(.plain)
+                    .modifier(CardAppearModifier(index: index, trigger: animationID))
                 }
             }
             .padding(16)
         }
         .background(Color.CF.background)
+        .onChange(of: selectedCity) { _ in animationID = UUID() }
+        .onChange(of: selectedSports) { _ in animationID = UUID() }
     }
 
     private var emptyState: some View {

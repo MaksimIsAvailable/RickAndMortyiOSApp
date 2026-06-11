@@ -11,7 +11,8 @@ struct FeedView: View {
 
     @ObservedObject var viewModel: FeedViewModel
     @State private var showFilter = false
-    
+    @State private var refreshID: UUID = .init()
+
 
     var body: some View {
         NavigationStack {
@@ -21,11 +22,11 @@ struct FeedView: View {
                 filterChips
                     .padding(.vertical, 10)
 
-                if viewModel.isLoading {
+                if viewModel.isLoading && viewModel.workouts.isEmpty {
                     Spacer()
                     ProgressView()
                     Spacer()
-                } else if let error = viewModel.errorMessage {
+                } else if let error = viewModel.errorMessage, viewModel.workouts.isEmpty {
                     Spacer()
                     VStack(spacing: 12) {
                         Text("⚠️")
@@ -122,11 +123,12 @@ struct FeedView: View {
     private var workoutList: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                ForEach(viewModel.filteredWorkouts) { workout in
+                ForEach(Array(viewModel.filteredWorkouts.enumerated()), id: \.element.id) { index, workout in
                     NavigationLink(value: workout) {
                         WorkoutCardView(workout: workout, club: viewModel.club(for: workout))
                     }
                     .buttonStyle(.plain)
+                    .modifier(CardAppearModifier(index: index, trigger: refreshID))
                 }
             }
             .padding(16)
@@ -134,6 +136,7 @@ struct FeedView: View {
         .background(Color.CF.background)
         .refreshable {
             await viewModel.reload()
+            refreshID = UUID()
         }
     }
 
@@ -179,5 +182,31 @@ struct FeedView: View {
             }
             Spacer()
         }
+    }
+}
+
+struct CardAppearModifier: ViewModifier {
+    let index: Int
+    let trigger: UUID
+
+    @State private var isVisible = false
+
+    private var delay: Double { Double(min(index, 8)) * 0.055 }
+
+    func body(content: Content) -> some View {
+        content
+            .opacity(isVisible ? 1 : 0)
+            .offset(y: isVisible ? 0 : 20)
+            .onAppear {
+                withAnimation(.spring(response: 0.45, dampingFraction: 0.75).delay(delay)) {
+                    isVisible = true
+                }
+            }
+            .onChange(of: trigger) { _ in
+                isVisible = false
+                withAnimation(.spring(response: 0.45, dampingFraction: 0.75).delay(delay)) {
+                    isVisible = true
+                }
+            }
     }
 }
