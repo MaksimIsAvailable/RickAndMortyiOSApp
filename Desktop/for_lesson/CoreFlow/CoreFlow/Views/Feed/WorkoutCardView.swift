@@ -35,7 +35,7 @@ struct WorkoutCardView: View {
                 if let distance = workout.distanceKm {
                     Label("\(Int(distance)) км", systemImage: "arrow.triangle.swap")
                 }
-                Label(workout.date, systemImage: "clock")
+                Label(workout.meetingTime, systemImage: "clock")
                 if let club {
                     Label(club.name, systemImage: "person.3")
                 }
